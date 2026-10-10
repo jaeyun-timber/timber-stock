@@ -967,6 +967,8 @@ body.dragging{user-select:none;-webkit-user-select:none}
  .pdoc .pd-tbl tr.tot td{border-top:2px solid #1F5E4B;border-bottom:2px solid #1F5E4B;font-weight:700;padding:6px 7px;background:#eef3f0}
  .pdoc .pd-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:9.5px;color:#666}
 }
+.appver{text-align:center;font-size:11px;color:var(--muted);margin:-120px 0 140px;font-family:var(--font-num)}
+@media print{.appver{display:none}}
 </style>
 </head>
 <body>
@@ -1217,6 +1219,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   </form>
 </div>
 <div id="printArea" aria-hidden="true"></div>
+<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-최종</p>
 
 <div class="scrim" id="outDlg" hidden>
   <div class="arr" role="dialog" aria-modal="true" aria-labelledby="outTitle" id="outBox"></div>
