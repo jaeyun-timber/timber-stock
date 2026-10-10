@@ -879,9 +879,98 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .secbox .btns{display:flex;gap:6px;flex-wrap:wrap}
 .secnote{font-size:12px;color:var(--muted);line-height:1.65;margin:6px 0 0}
 .secnote b{color:var(--ink)}
+
+/* ================= 인쇄 정리 ================= */
+#printHead{display:none}
+@media print{
+ @page{size:A4;margin:12mm 11mm}
+ html,body{background:#fff!important;color:#000}
+ :root{--bg:#fff;--surface:#fff;--surface-2:#f2f2f2;--ink:#111;--muted:#555;--line:#c8c8c8}
+ *{box-shadow:none!important;transition:none!important}
+ #printHead{display:flex;align-items:flex-end;gap:12px;border-bottom:2px solid #1F5E4B;padding:0 0 7px;margin:0 0 12px}
+ #printHead .ph-l{flex:1;min-width:0}
+ #printHead .ph-co{font-size:10px;color:#1F5E4B;font-weight:700;letter-spacing:.03em}
+ #printHead .ph-t{font-size:17px;font-weight:700;color:#000;margin-top:2px}
+ #printHead .ph-m{font-size:9.5px;color:#555;text-align:right;line-height:1.5;white-space:nowrap}
+ .wrap{padding:0!important;max-width:none!important}
+ /* 화면 조작용은 모두 숨김 */
+ .appbar,#calBox,.admin,.rail,#railBox,.cart,#cartBar,#log,.crumb,#sortBtn,.back,.pagebar,.inctg,.vtip,.hit,.add,.del,.rmrow,
+ .drawer,.dscrim,#lockScr,#admLock,.mlist,.mr-bar,.kbhint,.mr-edit-bar{display:none!important}
+ /* 현황판 첫 화면 */
+ .barrow{margin:0 0 6px}
+ .strip{break-inside:avoid;margin-bottom:10px}
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important}
+ .card{break-inside:avoid;padding:9px 10px!important;gap:6px!important;border-color:#bbb}
+ /* 규격 상세 */
+ .sum{break-inside:avoid;margin-bottom:10px}
+ .stiles,.donut,.vchart{break-inside:avoid;border-color:#bbb}
+ .rows{border:1px solid #bbb;border-radius:8px;overflow:hidden}
+ .row{grid-template-columns:minmax(150px,1fr) 80px 110px 70px!important;padding:3px 10px!important;gap:2px 10px!important;background:none!important;break-inside:avoid;min-height:0}
+ .row .name{font-size:12.5px}
+ .rvol small,.rqty small{display:none!important}
+ .rqty,.rvol,.rtgt{font-size:10px}
+ .scr-only{display:none!important}
+ .row .sub{font-size:10px}
+ .rtgt input{border:none!important;background:none!important;padding:0!important;font-weight:600}
+ .rqty b,.rvol b{font-size:13px}
+ /* 주문서 */
+ .ordwrap{display:block!important}
+ #vendorBox{display:none!important}
+ .rc,#sheet{border:none!important;padding:0!important;max-width:520px!important;margin:0 auto!important;border-radius:0!important}
+ .rc .st-seg button[aria-pressed="false"]{display:none}
+ #ordConfirm,#ordBack,#printBtn{display:none!important}
+ /* 입항·출고 창만 인쇄 */
+ body.print-dlg .wrap,body.print-dlg .cart{display:none!important}
+ body.print-dlg .scrim#arrDlg:not([hidden]),body.print-dlg .scrim#outDlg:not([hidden]){display:block!important;position:static!important;inset:auto!important;background:none!important;padding:0!important}
+ body.print-dlg .arr{max-width:none!important;max-height:none!important;overflow:visible!important;border:none!important;padding:0!important;border-radius:0!important}
+ body.print-dlg .arr-x,body.print-dlg .arr-acts,body.print-dlg .arr-paste,body.print-dlg .fix,body.print-dlg .unsaved,body.print-dlg #outBackDay,body.print-dlg .cpick{display:none!important}
+ body.print-dlg .arr-st button[aria-pressed="false"]{display:none!important}
+ body.print-dlg .arr-top{padding-right:0!important}
+ body.print-dlg .arr-info div{border-color:#bbb}
+ body.print-dlg .pk{font-size:10.5px}
+ body.print-dlg .pk th{background:#e9efec!important;color:#1F5E4B!important}
+ body.print-dlg .pk td{padding:3px 6px}
+ body.print-dlg .pk tr{break-inside:avoid}
+ body.print-dlg .pkwrap{overflow:visible!important}
+ body.print-dlg .odlist .cal-item{padding:5px 8px}
+ /* 메일 영수증 */
+ body.print-mail #printHead{display:none!important}
+}
+
+/* 주문서 인쇄 (A4 한 장 정식 양식) */
+@page mailpage{size:A4;margin:0}
+@media print{
+ body.print-mail #printArea{display:block}
+ body.print-mail .pdoc{page:mailpage;padding:15mm 14mm 12mm;font-family:var(--font-ui);color:#111;font-size:11px}
+ .pdoc .pd-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:2.5px solid #1F5E4B;padding-bottom:8px;margin-bottom:10px}
+ .pdoc .pd-co{font-size:10px;font-weight:700;color:#1F5E4B;letter-spacing:.04em}
+ .pdoc h1{font-size:24px;font-weight:700;letter-spacing:.12em;margin:2px 0}
+ .pdoc .pd-no{font-family:var(--font-num);font-size:10.5px;color:#555}
+ .pdoc .pd-ttl{flex:1 1 auto;min-width:0;white-space:nowrap}
+ .pdoc .pd-sign{border-collapse:collapse;font-size:10px;width:auto!important;flex:0 0 auto;margin:0!important}
+ .pdoc .pd-sign th{border:1px solid #888;padding:2px 0;width:58px;background:#f1f4f2;font-weight:600;text-align:center}
+ .pdoc .pd-sign td{border:1px solid #888;height:44px}
+ .pdoc .pd-info{width:100%;border-collapse:collapse;margin-bottom:10px}
+ .pdoc .pd-info th{width:72px;text-align:left;background:#f1f4f2;border:1px solid #bbb;padding:5px 8px;font-weight:600;font-size:10.5px}
+ .pdoc .pd-info td{border:1px solid #bbb;padding:5px 8px;font-family:var(--font-num)}
+ .pdoc .pd-info td.big{font-family:var(--font-ui);font-size:14px;font-weight:700}
+ .pdoc .pd-tbl{width:100%;border-collapse:collapse}
+ .pdoc .pd-tbl th{background:#1F5E4B;color:#fff;font-weight:600;padding:5px 7px;font-size:10.5px;text-align:left}
+ .pdoc .pd-tbl td{padding:3.5px 7px;border-bottom:1px solid #d6d6d6}
+ .pdoc .pd-tbl tbody tr:nth-child(even) td{background:#f7f8f6}
+ .pdoc .pd-tbl tr.grp td{border-top:1.5px solid #888}
+ .pdoc .pd-tbl tr{break-inside:avoid}
+ .pdoc .pd-tbl .n{text-align:right;font-family:var(--font-num)}
+ .pdoc .pd-tbl .c{text-align:center;color:#666;width:30px}
+ .pdoc .pd-tbl .b{font-weight:700}
+ .pdoc .pd-tbl th.c{color:#fff}
+ .pdoc .pd-tbl tr.tot td{border-top:2px solid #1F5E4B;border-bottom:2px solid #1F5E4B;font-weight:700;padding:6px 7px;background:#eef3f0}
+ .pdoc .pd-foot{display:flex;justify-content:space-between;margin-top:10px;font-size:9.5px;color:#666}
+}
 </style>
 </head>
 <body>
+<div id="printHead" aria-hidden="true"></div>
 <div class="wrap">
   <header class="appbar">
     <div class="brand" id="brandHome" role="link" tabindex="0" title="현황판 처음 화면으로">
@@ -1472,7 +1561,7 @@ function drawSum(g){
    if(cw>=12)line+=sg.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--tgt)" stroke="var(--surface)" stroke-width="2"/>`).join("")});
   const lab=sumItems.map((x,i)=>i%k===0?`<text x="${pl+cw*i+cw/2}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${x.len}</text>`:"").join("");
   const short=sumItems.filter(x=>x.target>0&&x.qty+x.inc<x.target).length;
-  chart=`<div class="vchart${isAdmin?" can":""}" id="vchart"><div class="vh"><b>길이별 현재고와 적정재고 · 막대가 선보다 낮으면 모자란 길이${isAdmin?" · 막대를 누르면 담기":""}</b>
+  chart=`<div class="vchart${isAdmin?" can":""}" id="vchart"><div class="vh"><b>길이별 현재고와 적정재고 · 막대가 선보다 낮으면 모자란 길이${isAdmin?'<span class="scr-only"> · 막대를 누르면 담기</span>':""}</b>
     <span class="lgd"><span><i class="lb"></i>현재 재고</span>${incAll?`<span${showInc?"":' class="off"'}><i class="li"></i>입항 재고</span>`:""}<span><i class="ll"></i>적정 재고</span><span>모자란 길이 <b>${short}</b>종</span>
      ${incAll?`<label class="inctg" title="단축키 /"><input type="checkbox" id="incTg"${showInc?" checked":""}> 입항 재고 더해 보기 <kbd>/</kbd></label>`:""}</span></div>
    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="길이별 현재 재고 막대와 적정 재고 선">${grid}<line x1="${pl}" x2="${W-pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--muted)" stroke-width="1"/>${hits}<g pointer-events="none">${bars}${line}</g>${lab}</svg>
@@ -1585,6 +1674,28 @@ el("admSet").addEventListener("click",async()=>{if(!isAdmin)return;const a=el("a
  el("admPw1").value="";el("admPw2").value="";
  commit("edit","관리자 암호 정함·바꿈");say("관리자 암호를 정했습니다. '데이터 파일 내려받기' → GitHub 에 올리면 적용됩니다.",true);drawAdmSec()});
 el("admForget").addEventListener("click",()=>{try{localStorage.removeItem(ADMKEY)}catch(e){}const m=el("admMsg");m.textContent="이 기기의 관리자 기억을 지웠습니다. 다음에 관리자 주소로 열면 암호를 묻습니다.";m.hidden=false;m.style.color="var(--good)"});
+
+
+/* ==== 인쇄: 지금 보고 있는 화면에 맞는 머리글을 붙이고, 창이 열려 있으면 그 창만 ==== */
+function printHeadFill(title){const d=new Date(),z=n=>String(n).padStart(2,"0");
+ el("printHead").innerHTML=`<div class="ph-l"><div class="ph-co">SSP 신성포장목재</div><div class="ph-t">${esc(title)}</div></div>
+  <div class="ph-m">출력 ${d.getFullYear()}.${z(d.getMonth()+1)}.${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}${adminName?` · ${esc(adminName)}`:""}<br>${SERVER&&SERVER.updatedAt?"자료 기준 "+esc(new Date(SERVER.updatedAt).toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})):""}</div>`}
+function preparePrint(){
+ if(document.body.classList.contains("print-mail"))return;
+ const arrOn=!el("arrDlg").hidden,outOn=!el("outDlg").hidden;
+ if(arrOn||outOn){document.body.classList.add("print-dlg");
+  if(arrOn){const a=arrCur();printHeadFill(a?`입항 패킹리스트 — ${arrTitle(a)}`:"입항 일정")}
+  else if(outDay&&!outOpen)printHeadFill(`${md(outDay)} 출고 목록`);
+  else{const o=outCur();printHeadFill(o?`출고 전표 — ${outTitle(o)}`:"출고 전표")}
+  return}
+ if(!el("view-inbox").hidden){const o=mailOpen&&DOC.orders.find(x=>x.id===mailOpen);if(o){buildMailPrint(o);document.body.classList.add("print-mail")}else printHeadFill("메일함");return}
+ if(!el("view-order").hidden){printHeadFill("목재 주문서");return}
+ if(!el("view-detail").hidden&&open){printHeadFill(`${species} · ${open} 길이별 재고`);return}
+ printHeadFill(`${species} 재고 현황`)}
+function finishPrint(){document.body.classList.remove("print-dlg")}
+window.addEventListener("beforeprint",preparePrint);
+window.addEventListener("afterprint",finishPrint);
+function printNow(){preparePrint();window.print();setTimeout(()=>{if(!matchMedia("print").matches)finishPrint()},1500)}
 
 /* ==== 입항 일정 달력 ==== */
 const ARR_ST=["입항예정","입항완료","입고완료"];
@@ -1727,7 +1838,7 @@ function drawArr(){
      <button class="btn" type="button" id="arrCancel">취소</button><button class="btn b-ord" type="button" id="arrSave">저장</button>`
    :`${isAdmin?`<button class="iconbtn del" type="button" id="arrDel" aria-label="일정 삭제" title="일정 삭제">${ICO.trash}</button>`:""}<span class="msg">${esc(arrMsg)}</span><span style="flex:1"></span>
      ${isAdmin&&a.status==="입고완료"?'<button class="btn unstock" type="button" id="arrUnstock" title="재고에 넣은 수량을 다시 빼고 입항완료로 돌립니다">↩ 입고 취소</button>':""}
-     <button class="btn" type="button" id="arrClose">닫기</button>${isAdmin&&a.status!=="입고완료"?'<button class="btn b-ord" type="button" id="arrEditBtn">수정</button>':""}`}
+     <button class="btn" type="button" id="arrPrint">인쇄</button><button class="btn" type="button" id="arrClose">닫기</button>${isAdmin&&a.status!=="입고완료"?'<button class="btn b-ord" type="button" id="arrEditBtn">수정</button>':""}`}
   </div>`}
 function arrRecalc(){const a=arrDraft,T=arrTotals(a);a._dirty=true;
  a.rows.forEach((r,i)=>{const pcs=pcsOf(r),p=el("apc"+i),m=el("am3"+i),v=el("avl"+i);
@@ -1824,6 +1935,7 @@ el("arrDlg").addEventListener("click",e=>{
  const t=e.target.closest("button");if(!t)return;
  const a0=arrCur();if(!a0)return;
  if(t.id==="arrX"||t.id==="arrClose"){arrClose();return}
+ if(t.id==="arrPrint"){printNow();return}
  if(!isAdmin)return;
  if(t.dataset.ast){if(arrEdit&&arrDraft){if(t.dataset.ast==="입고완료"||arrDraft.status==="입고완료"){arrMsg="입고완료는 저장한 뒤 눌러주세요.";drawArr();return}
    arrDraft.status=t.dataset.ast;arrDraft._dirty=true;drawArr();return}
@@ -1954,7 +2066,7 @@ function drawOutDay(){const L=(DOC.outs||[]).filter(o=>o.date===outDay);
   <div class="pkwrap"><table class="pk"><thead><tr><th>수종</th><th>길이</th><th>폭</th><th>두께</th><th>수량<br><small>개</small></th><th>재적<br><small>才</small></th><th>전표</th></tr></thead>
    <tbody>${rows.map(r=>`<tr><td class="l">${esc(r.sp||"—")}</td><td>${r.len}</td><td>${r.w}</td><td>${r.t}</td><td>${fmt(r.qty)}</td><td>${fmtVol(volOf(r.len,r.w,r.t,r.qty))}</td><td class="c">${r.n>1?r.n+"장":""}</td></tr>`).join("")||`<tr><td colspan="7" class="c" style="padding:16px;color:var(--muted)">품목이 없습니다.</td></tr>`}</tbody>
    <tfoot><tr><td class="l" colspan="4">합계 · ${rows.length}줄</td><td>${fmt(q)}</td><td>${fmtVol(v)}</td><td></td></tr></tfoot></table></div>
-  <div class="arr-acts"><span style="flex:1"></span><button class="btn" type="button" id="outClose">닫기</button></div>`}
+  <div class="arr-acts"><span style="flex:1"></span><button class="btn" type="button" id="outPrint">인쇄</button><button class="btn" type="button" id="outClose">닫기</button></div>`}
 function drawOut(){
  if(outDay&&!outOpen){drawOutDay();return}
  const o0=outCur();if(!o0){el("outDlg").hidden=true;return}
@@ -2008,7 +2120,7 @@ function drawOut(){
      <button class="btn" type="button" id="outCancel">취소</button><button class="btn b-ord" type="button" id="outSave">저장</button>`
    :`${isAdmin?`<button class="iconbtn del" type="button" id="outDel" aria-label="전표 삭제" title="전표 삭제">${ICO.trash}</button>`:""}<span class="msg">${esc(outMsg)}</span><span style="flex:1"></span>
      ${isAdmin&&done?'<button class="btn unstock" type="button" id="outUndo" title="뺀 수량을 재고에 다시 넣고 출고대기로 돌립니다">↩ 출고 취소</button>':""}
-     <button class="btn" type="button" id="outClose">닫기</button>${isAdmin&&!done?'<button class="btn" type="button" id="outEditBtn">수정</button><button class="btn b-ord" type="button" data-ost="출고완료">출고완료</button>':""}`}
+     <button class="btn" type="button" id="outPrint">인쇄</button><button class="btn" type="button" id="outClose">닫기</button>${isAdmin&&!done?'<button class="btn" type="button" id="outEditBtn">수정</button><button class="btn b-ord" type="button" data-ost="출고완료">출고완료</button>':""}`}
   </div>`}
 function outRecalc(){const o=outDraft,T=outTot(o);o._dirty=true;
  o.rows.forEach((r,i)=>{const v=el("ovl"+i);if(v)v.textContent=fmtVol(volOf(r.len,r.w,r.t,r.qty))});
@@ -2067,6 +2179,7 @@ el("outDlg").addEventListener("click",e=>{
  const t=e.target.closest("button");if(!t)return;
  if(t.dataset.oopen){outFromDay=outDay;outOpenDlg(t.dataset.oopen,false);return}
  if(t.id==="outBackDay"){const k=outFromDay;outFromDay=null;outDayDlg(k);return}
+ if(t.id==="outPrint"){printNow();return}
  if(outDay&&!outOpen){if(t.id==="outX"||t.id==="outClose")outClose();return}
  const o0=outCur();if(!o0)return;
  if(t.id==="outX"||t.id==="outClose"){outClose();return}
@@ -2382,29 +2495,30 @@ el("mailView").addEventListener("click",async e=>{
 
 
 /* ---- 메일 영수증: 인쇄 ---- */
-function printMail(o){
- const rows=sortRows(o.rows),{tq,tv}=receiptTotals({rows});
- const body=rows.map((r,i)=>`<tr${i>0&&rows[i-1].sp!==r.sp?' class="grp"':""}><td class="spc">${esc(r.sp)}</td><td class="pname">${r.label}${r.bundles?`<div style="font-size:11px;color:var(--muted)">${fmt(r.bundles)}묶음 × ${fmt(r.qty/r.bundles)}개</div>`:""}</td><td class="num">${fmtVol(rowVol(r))}</td><td class="num">${fmt(r.qty)}</td></tr>`).join("");
- el("printArea").innerHTML=`<div class="rc">
-  <div class="rc-top"><span class="rc-kind">목재 주문서 #${o.no}</span><span class="stp" data-st="${esc(o.status)}" style="width:auto;padding:3px 12px">${esc(o.status)}</span></div>
-  <h2 class="rc-vendor">${esc(o.vendor)}</h2>
-  <div class="rc-amt">${fmtVol(tv)}<small>才</small></div>
-  <div class="rc-sub">합계 <b>${fmt(tq)}</b>개 · 품목 <b>${rows.length}</b>건</div>
-  <hr class="rc-hr">
-  <dl class="rc-kv">
-   <dt>작성</dt><dd>${dtStr(o.at)} · ${esc(o.by||"이름 없음")}</dd>
-   ${o.editedAt?`<dt>최종 수정</dt><dd>${dtStr(o.editedAt)} · ${esc(o.editedBy||"")}</dd>`:""}
-   <dt>진행 상태</dt><dd>${esc(o.status)}</dd>
-   <dt>금액</dt><dd class="soon">가격 기능 추가 예정</dd>
-  </dl>
-  <hr class="rc-hr">
-  <table><thead><tr><th>수종</th><th>품명 (길이×폭×두께)</th><th class="num">才 재적</th><th class="num">수량 (개)</th></tr></thead>
-   <tbody>${body}</tbody><tfoot><tr><td></td><td>합계</td><td class="num">${fmtVol(tv)}</td><td class="num">${fmt(tq)}</td></tr></tfoot></table>
-  <hr class="rc-hr"><div class="rc-foot">SSP 신성포장목재 · 재적 = 길이 × 폭 × 두께 × 수량 × 0.0000003</div></div>`;
+function printMail(o){buildMailPrint(o);
  document.body.classList.add("print-mail");
  const done=()=>{document.body.classList.remove("print-mail");el("printArea").innerHTML="";window.removeEventListener("afterprint",done)};
  window.addEventListener("afterprint",done);
  window.print();setTimeout(()=>{if(document.body.classList.contains("print-mail")&&!matchMedia("print").matches)done()},1500)}
+function buildMailPrint(o){
+ const rows=sortRows(o.rows),{tq,tv}=receiptTotals({rows}),z=n=>String(n).padStart(2,"0"),d=new Date(o.at);
+ const day=isNaN(d)?"":`${d.getFullYear()}.${z(d.getMonth()+1)}.${z(d.getDate())}`;
+ const body=rows.map((r,i)=>{const [w,t]=specWT(r.spec);
+  return `<tr${i>0&&rows[i-1].sp!==r.sp?' class="grp"':""}><td class="c">${i+1}</td><td>${esc(r.sp)}</td><td class="n">${fmt(r.len)}</td><td class="n">${fmt(w)}</td><td class="n">${fmt(t)}</td><td class="n">${r.bundles?fmt(r.bundles)+"묶음":""}</td><td class="n b">${fmt(r.qty)}</td><td class="n">${fmtVol(volOf(r.len,w,t,r.qty))}</td></tr>`}).join("");
+ el("printArea").innerHTML=`<div class="pdoc">
+  <div class="pd-head">
+   <div class="pd-ttl"><div class="pd-co">SSP 신성포장목재</div><h1>목재 주문서</h1><div class="pd-no">No. ${o.no} · ${day}</div></div>
+   <table class="pd-sign"><tr><th>작성</th><th>검토</th><th>승인</th></tr><tr><td></td><td></td><td></td></tr></table>
+  </div>
+  <table class="pd-info">
+   <tr><th>거래처</th><td class="big">${esc(o.vendor||"거래처 미지정")}</td><th>진행 상태</th><td>${esc(o.status)}</td></tr>
+   <tr><th>작성</th><td>${dtStr(o.at)} · ${esc(o.by||"이름 없음")}</td><th>최종 수정</th><td>${o.editedAt?`${dtStr(o.editedAt)} · ${esc(o.editedBy||"")}`:"—"}</td></tr>
+   <tr><th>합계</th><td colspan="3"><b>${rows.length}</b>품목 · <b>${fmt(tq)}</b>개 · <b>${fmtVol(tv)}</b>才</td></tr>
+  </table>
+  <table class="pd-tbl"><thead><tr><th class="c">No</th><th>수종</th><th class="n">길이</th><th class="n">폭</th><th class="n">두께</th><th class="n">번들</th><th class="n">수량 (개)</th><th class="n">재적 (才)</th></tr></thead>
+   <tbody>${body}<tr class="tot"><td></td><td colspan="5">합계</td><td class="n b">${fmt(tq)}</td><td class="n b">${fmtVol(tv)}</td></tr></tbody></table>
+  <div class="pd-foot"><span>재적 = 길이 × 폭 × 두께 × 수량 × 0.0000003</span><span>SSP 신성포장목재 목재 재고 현황판에서 출력</span></div>
+ </div>`}
 
 /* ---- 메일 영수증: 엑셀(.xlsx) 만들기 — 외부 라이브러리 없이 ---- */
 const XCRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
