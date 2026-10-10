@@ -1018,6 +1018,24 @@ body.dragging{user-select:none;-webkit-user-select:none}
  .cal-body{grid-template-columns:1fr}
  .cal-side{border-left:none;border-top:1px solid var(--line);height:auto;min-height:0;max-height:none}
 }
+
+/* ---- 정리판6: 앞 색 띠 두껍게 · 줄 살짝 크게 (화면 전용) ---- */
+@media screen{
+ .row{border-left-width:7px;padding-left:10px}
+ .ev{border-left-width:8px!important;padding:3px 7px;font-size:12.5px;line-height:1.4;border-radius:5px}
+ .cal-day{height:112px;gap:4px}
+ .cal-side .cal-item.sl{border-left-width:7px!important;padding:9px 10px;min-height:46px}
+ .cal-side .cal-item.sl .m b{font-size:13.5px}
+ .daylist .cal-item.sl{border-left-width:7px}
+}
+@media screen and (max-width:820px){
+ .ev{border-left-width:6px!important;padding:2px 4px;font-size:11px}
+ .cal-day{height:94px;gap:3px}
+}
+@media screen and (max-width:640px){
+ .cal-day{height:94px}
+ .ev{font-size:10.5px}
+}
 </style>
 </head>
 <body>
@@ -1270,7 +1288,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   </form>
 </div>
 <div id="printArea" aria-hidden="true"></div>
-<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-정리판5</p>
+<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-정리판6</p>
 
 <div class="scrim" id="dayDlg" hidden>
   <div class="arr daybox" role="dialog" aria-modal="true" aria-labelledby="dayTitle" id="dayBox"></div>
