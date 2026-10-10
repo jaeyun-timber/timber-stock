@@ -2642,6 +2642,8 @@ async function boot(reuse){
 /* ---- admin bar ---- */
 /* ---- 관리자 모드: 버튼 하나로 켜고 끄기 ---- */
 function drawAcct(){const b=el("loginBtn");
+ /* 사용자(보기 전용) 화면에는 관리자 모드 버튼을 보여주지 않음 — 관리자 주소(#admin)로 연 사람만 보임 */
+ b.hidden=!isAdmin;
  b.className="btn ghost acct";b.setAttribute("aria-pressed",String(isAdmin&&bannerOn));
  b.innerHTML=`<span class="tg" aria-hidden="true"></span>관리자 모드`;
  b.title=!isAdmin?"누르면 재고를 고칠 수 있는 관리자 모드가 켜집니다":bannerOn?"누르면 위쪽 관리자 줄만 숨깁니다 (고치기 기능은 그대로)":"누르면 위쪽 관리자 줄을 다시 보여줍니다";
@@ -2658,7 +2660,7 @@ function setAdmin(on){
 function saveBanner(){try{localStorage.setItem(BANNERKEY,bannerOn?"1":"0")}catch(e){}}
 /* 처음 누르면 관리자 모드가 켜지고, 그다음부터는 위쪽 관리자 줄만 숨기기/보이기 */
 function toggleAdmin(){
- if(!isAdmin){bannerOn=true;saveBanner();setAdmin(true);return}
+ if(!isAdmin)return;   /* 사용자 화면에서는 켤 수 없음 */
  bannerOn=!bannerOn;saveBanner();gate();drawCal()}
 el("loginBtn").addEventListener("click",toggleAdmin);
 el("adminName").addEventListener("change",e=>{adminName=e.target.value.trim();
