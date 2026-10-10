@@ -1091,6 +1091,14 @@ body.dragging{user-select:none;-webkit-user-select:none}
         <div class="btns"><button class="btn b-ord" id="secSet" type="button">암호 정하기·바꾸기</button><button class="btn" id="secOff" type="button">암호 끄기</button><button class="btn" id="secForget" type="button">이 기기에서 잠그기</button></div>
         <p class="msg" id="secMsg" hidden></p>
       </div>
+      <div class="secbox">
+        <div class="st" id="admState"><i></i><span></span></div>
+        <input type="password" id="admPw1" placeholder="새 관리자 암호 (6자 이상)" autocomplete="new-password" aria-label="새 관리자 암호">
+        <input type="password" id="admPw2" placeholder="한 번 더" autocomplete="new-password" aria-label="새 관리자 암호 확인">
+        <div class="btns"><button class="btn b-ord" id="admSet" type="button">관리자 암호 정하기·바꾸기</button><button class="btn" id="admForget" type="button">이 기기 관리자 잠그기</button></div>
+        <p class="msg" id="admMsg" hidden></p>
+        <p class="secnote">관리자 암호를 정하면 관리자 주소(#admin)로 열어도 이 암호를 넣어야 관리자 화면이 열립니다. 모르면 보기 전용으로만 열립니다. 열람 암호와 다른 암호로 정하세요.</p>
+      </div>
       <p class="secnote">① 암호를 정하거나 바꾼 뒤 <b>데이터 파일 내려받기 → GitHub 에 data.json 올리기</b>를 해야 실제로 잠깁니다.<br>② 직원들에게 새 암호를 알려주세요. 한 번 넣으면 그 기기는 기억합니다.<br>③ 암호를 잊으면 아무도 자료를 열 수 없습니다. <b>안전한 곳에 꼭 적어 두세요.</b><br>④ GitHub 에 예전에 올린 암호 없는 data.json 은 '기록(History)'에 남아 있습니다. 완전히 감추려면 저장소를 비공개로 바꾸세요.</p>
     </section>
   </div>
@@ -1105,6 +1113,18 @@ body.dragging{user-select:none;-webkit-user-select:none}
     <label class="lk-rem"><input type="checkbox" id="lockRem" checked> 이 기기에서 기억하기</label>
     <p class="lk-err" id="lockErr" hidden>암호가 맞지 않습니다.</p>
     <button class="btn b-ord" type="submit">열기</button>
+  </form>
+</div>
+<div class="lock" id="admLock" hidden>
+  <form class="lockbox" id="admForm" autocomplete="off">
+    <div class="lk-brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></div>
+    <h2>관리자 확인</h2>
+    <p>관리자만 재고를 고칠 수 있습니다. <b>관리자 암호</b>를 넣어주세요.</p>
+    <input type="password" id="admPw" placeholder="관리자 암호" aria-label="관리자 암호" autocomplete="current-password">
+    <label class="lk-rem"><input type="checkbox" id="admRem" checked> 이 기기에서 기억하기</label>
+    <p class="lk-err" id="admErr" hidden>암호가 맞지 않습니다.</p>
+    <button class="btn b-ord" type="submit">관리자로 열기</button>
+    <button class="btn" type="button" id="admCancel" style="margin-top:8px">보기 전용으로 보기</button>
   </form>
 </div>
 <div id="printArea" aria-hidden="true"></div>
@@ -1191,6 +1211,7 @@ function normalize(d){
  if(!Array.isArray(d.arrivals))d.arrivals=[];
  d.arrivals=d.arrivals.filter(a=>a&&a.date).map(normArr);
  if(!Array.isArray(d.outs))d.outs=[];
+ if(d.adminPw&&!(d.adminPw.salt&&d.adminPw.hash))delete d.adminPw;
  if(!Array.isArray(d.clients))d.clients=[];d.clients=d.clients.filter(c=>c&&c.name).map(c=>({name:String(c.name)}));
  d.outs=d.outs.filter(o=>o&&o.date).map(normOut);
  if(!Array.isArray(d.specList)){const seen=new Set();d.specList=[];
@@ -1261,7 +1282,7 @@ function drawSettings(){if(!isSetOpen())return;
   el("specOnN").textContent=DOC.specs.filter(g=>g.sp===setSp&&g.on).length;
   const L=DOC.specList,orph=DOC.specs.filter(g=>g.sp===setSp&&!L.includes(g.spec)).map(g=>g.spec);
   el("specList").innerHTML=(L.map(x=>specRow(x,true)).join("")+orph.map(x=>specRow(x,false)).join(""))||emptyRow("규격 목록이 비어 있습니다. 아래에서 추가하세요.")}
- if(setTab==="sec")drawSec();
+ if(setTab==="sec"){drawSec();drawAdmSec()}
  if(setTab==="client")el("clientList").innerHTML=(DOC.clients||[]).map((v,i)=>{const n=(DOC.outs||[]).filter(o=>o.client===v.name).length;
   return dRow(`<span class="dname">${esc(v.name)}</span>${n?`<span class="dmeta">출고 ${n}건</span>`:""}`,`data-dcli="${i}"`,`${esc(v.name)} 출고처 삭제`)}).join("")||emptyRow("출고처가 없습니다. 아래에서 추가하세요.");
  if(setTab==="vendor")el("vendorList").innerHTML=DOC.vendors.map((v,i)=>dRow(`<span class="dname">${esc(v.name)}</span>`,`data-dven="${i}"`,`${esc(v.name)} 거래처 삭제`)).join("")||emptyRow("거래처가 없습니다. 아래에서 추가하세요.")}
@@ -1537,6 +1558,33 @@ el("secOff").addEventListener("click",()=>{if(!isAdmin)return;
   encOn=false;try{localStorage.setItem(ENCONKEY,"0")}catch(e){}
   DOC.log.unshift({at:nowStr(),iso:new Date().toISOString(),by:adminName||"이름 없음",type:"edit",text:"열람 암호 끔"});markDirty();redraw();drawSec()})});
 el("secForget").addEventListener("click",()=>{CRY=null;saveCry(false);drawSec();if(serverEnc)location.reload()});
+
+/* ==== 관리자 암호: 관리자 주소로 열어도 암호를 알아야 관리자 화면 ==== */
+const ADMKEY="timber-adm-v1";
+async function admHash(pw,salt){const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+ return b64(await crypto.subtle.deriveBits({name:"PBKDF2",salt:unb64(salt),iterations:200000,hash:"SHA-256"},base,256))}
+const admRemembered=ap=>{try{return !!ap&&localStorage.getItem(ADMKEY)===ap.hash}catch(e){return false}};
+/* 관리자 암호가 정해져 있으면 확인. 통과 true, 보기 전용 false */
+async function adminGate(ap){if(!ap||!ap.hash||!ap.salt)return true;if(admRemembered(ap))return true;
+ return await new Promise(res=>{const scr=el("admLock"),f=el("admForm"),pw=el("admPw"),er=el("admErr");
+  scr.hidden=false;er.hidden=true;pw.value="";setTimeout(()=>pw.focus(),30);
+  const done=v=>{scr.hidden=true;f.onsubmit=null;el("admCancel").onclick=null;res(v)};
+  el("admCancel").onclick=()=>done(false);
+  f.onsubmit=async e=>{e.preventDefault();const v=pw.value;if(!v)return;
+   const h=await admHash(v,ap.salt);
+   if(h===ap.hash){if(el("admRem").checked){try{localStorage.setItem(ADMKEY,h)}catch(err){}}done(true)}
+   else{er.hidden=false;pw.select()}}})}
+function drawAdmSec(){const ap=DOC.adminPw,on=!!(ap&&ap.hash),st=el("admState");st.className="st"+(on?" on":"");
+ const up=SERVER&&SERVER.adminPw&&ap&&SERVER.adminPw.hash===ap.hash;
+ st.querySelector("span").textContent=on?(up?"관리자 암호 사용 중":"관리자 암호를 정했습니다 — 내려받아 올리면 적용됩니다"):"관리자 암호 없음 — 주소에 #admin 만 붙이면 누구나 관리자 화면이 열립니다";
+ el("admForget").disabled=!on}
+el("admSet").addEventListener("click",async()=>{if(!isAdmin)return;const a=el("admPw1").value,b=el("admPw2").value,m=el("admMsg"),say=(x,ok)=>{m.textContent=x;m.hidden=false;m.style.color=ok?"var(--good)":""};
+ if(a.length<6)return say("암호는 6자 이상으로 넣어주세요.");if(a!==b)return say("두 칸의 암호가 다릅니다.");
+ const salt=b64(crypto.getRandomValues(new Uint8Array(16))),hash=await admHash(a,salt);
+ snapshot();DOC.adminPw={salt,hash};try{localStorage.setItem(ADMKEY,hash)}catch(e){}
+ el("admPw1").value="";el("admPw2").value="";
+ commit("edit","관리자 암호 정함·바꿈");say("관리자 암호를 정했습니다. '데이터 파일 내려받기' → GitHub 에 올리면 적용됩니다.",true);drawAdmSec()});
+el("admForget").addEventListener("click",()=>{try{localStorage.removeItem(ADMKEY)}catch(e){}const m=el("admMsg");m.textContent="이 기기의 관리자 기억을 지웠습니다. 다음에 관리자 주소로 열면 암호를 묻습니다.";m.hidden=false;m.style.color="var(--good)"});
 
 /* ==== 입항 일정 달력 ==== */
 const ARR_ST=["입항예정","입항완료","입고완료"];
@@ -2564,7 +2612,7 @@ function commit(type,text,more){
  markDirty();redraw()}
 function snapshot(){
  DOC.undo=(DOC.undo||[]);
- DOC.undo.unshift({th:clone(DOC.th),extra:clone(DOC.extra),species:clone(DOC.species),specList:clone(DOC.specList),vendors:clone(DOC.vendors),orders:clone(DOC.orders),arrivals:clone(DOC.arrivals||[]),outs:clone(DOC.outs||[]),clients:clone(DOC.clients||[]),specs:clone(DOC.specs)})}
+ DOC.undo.unshift({th:clone(DOC.th),extra:clone(DOC.extra),species:clone(DOC.species),specList:clone(DOC.specList),vendors:clone(DOC.vendors),orders:clone(DOC.orders),arrivals:clone(DOC.arrivals||[]),outs:clone(DOC.outs||[]),clients:clone(DOC.clients||[]),adminPw:DOC.adminPw?clone(DOC.adminPw):null,specs:clone(DOC.specs)})}
 /* 순서 바꾸기는 연달아 누르면 이력 한 줄·되돌리기 한 번으로 묶는다 */
 function moveStart(kind){if(lastMove!==kind)snapshot()}
 function moveEnd(kind,text){
@@ -2589,6 +2637,7 @@ function undoLatest(){
  if(Array.isArray(u.arrivals))DOC.arrivals=u.arrivals;
  if(Array.isArray(u.outs))DOC.outs=u.outs;
  if(Array.isArray(u.clients))DOC.clients=u.clients;
+ if("adminPw" in u){if(u.adminPw)DOC.adminPw=u.adminPw;else delete DOC.adminPw}
  normalize(DOC);
  if(!DOC.species.some(s=>s.name===species)){species=pickDefault();open=null}
  DOC.log.unshift({at:nowStr(),iso:new Date().toISOString(),by:adminName||"이름 없음",type:"undo",text:"되돌림 — "+((last&&last.text)||"")});
@@ -2596,7 +2645,7 @@ function undoLatest(){
  markDirty();redraw()}
 
 /* ---- GitHub 와 맞춰졌는지 스스로 확인 ---- */
-function coreOf(d){try{const n=normalize(clone(d||{}));return JSON.stringify({th:n.th,species:n.species,specList:n.specList,vendors:n.vendors,orders:n.orders,arrivals:n.arrivals,outs:n.outs,clients:n.clients,specs:n.specs,log:n.log})}catch(e){return ""}}
+function coreOf(d){try{const n=normalize(clone(d||{}));return JSON.stringify({th:n.th,species:n.species,specList:n.specList,vendors:n.vendors,orders:n.orders,arrivals:n.arrivals,outs:n.outs,clients:n.clients,adminPw:n.adminPw||null,specs:n.specs,log:n.log})}catch(e){return ""}}
 let syncTimer=null;
 function startSyncWatch(){if(syncTimer||!isAdmin)return;
  syncTimer=setInterval(checkSync,15000);
@@ -2626,6 +2675,9 @@ async function boot(reuse){
   else encOn=(()=>{try{return localStorage.getItem(ENCONKEY)!=="0"}catch(e){return true}})();
   SERVER=server}
  dirty=false;downloaded=false;el("dirtyMsg").hidden=true;
+ if(isAdmin&&!(await adminGate(server&&server.adminPw))){if(my!==bootSeq)return;
+  isAdmin=false;try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
+ if(my!==bootSeq)return;
  let draft=null;
  if(isAdmin){try{draft=JSON.parse(localStorage.getItem(DRAFT)||"null")}catch(e){}}
  if(draft&&draft.specs&&server&&coreOf(draft)===coreOf(server)){dropDraft();draft=null}
@@ -2668,7 +2720,7 @@ el("adminName").addEventListener("change",e=>{adminName=e.target.value.trim();
 el("dlBtn").addEventListener("click",async()=>{
  const out={updatedAt:new Date().toISOString(),by:adminName||"이름 없음",
   th:DOC.th,extra:DOC.specList.filter(x=>!SPECS.some(([w,t])=>w+"×"+t===x)),
-  species:DOC.species,specList:DOC.specList,vendors:DOC.vendors,orders:DOC.orders,arrivals:DOC.arrivals,outs:DOC.outs,clients:DOC.clients,specs:DOC.specs,log:DOC.log,undo:DOC.undo};
+  species:DOC.species,specList:DOC.specList,vendors:DOC.vendors,orders:DOC.orders,arrivals:DOC.arrivals,outs:DOC.outs,clients:DOC.clients,...(DOC.adminPw?{adminPw:DOC.adminPw}:{}),specs:DOC.specs,log:DOC.log,undo:DOC.undo};
  const body=encOn&&CRY?JSON.stringify(await encJSON(out)):JSON.stringify(out,null,1);
  const blob=new Blob([body],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="data.json";
