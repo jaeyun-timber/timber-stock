@@ -1301,7 +1301,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   </form>
 </div>
 <div id="printArea" aria-hidden="true"></div>
-<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-정리판8</p>
+<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-정리판9</p>
 
 <div class="scrim" id="dayDlg" hidden>
   <div class="arr daybox" role="dialog" aria-modal="true" aria-labelledby="dayTitle" id="dayBox"></div>
@@ -2894,6 +2894,7 @@ async function boot(reuse){
  if(!reuse||!server){server=null;
   try{const r=await fetch("data.json?v="+Date.now(),{cache:"no-store"});if(r.ok)server=await r.json()}catch(e){}
   if(my!==bootSeq)return;
+  lastSig=sigOf(server);
   serverEnc=isEnc(server);
   if(serverEnc){server=await openData(server);if(my!==bootSeq)return}
   if(!serverEnc){let f="0";try{f=localStorage.getItem(ENCONKEY)||"0"}catch(e){}if(f==="1"&&!CRY)await loadCry();encOn=f==="1"&&!!CRY}
@@ -2906,9 +2907,9 @@ async function boot(reuse){
  let draft=null;
  if(isAdmin){try{draft=JSON.parse(localStorage.getItem(DRAFT)||"null")}catch(e){}}
  if(draft&&draft.specs&&server&&coreOf(draft)===coreOf(server)){dropDraft();draft=null}
- /* 이 기기의 임시 수정이 GitHub 자료보다 예전 것이면 그대로 덮어 보여주지 않고 물어본다 */
- let staleDraft=null;
- if(draft&&draft.specs&&server&&server.updatedAt&&Date.parse(server.updatedAt)>(Date.parse(draft.updatedAt||0)||0)){staleDraft=draft;draft=null}
+ /* 이 기기의 임시 수정이 GitHub 자료보다 예전 것이면 버리고 바로 최신 자료를 보여준다 */
+ if(draft&&draft.specs&&server&&server.updatedAt&&Date.parse(server.updatedAt)>(Date.parse(draft.updatedAt||0)||0)){
+  try{localStorage.setItem("timber-draft-old-v1",JSON.stringify(draft))}catch(e){}dropDraft();draft=null}
  if(draft&&draft.specs){DOC=draft;dirty=true;el("dirtyMsg").hidden=false;
   el("dirtyMsg").textContent="올리지 않은 수정이 있습니다. 내려받아 GitHub에 올려주세요."}
  else DOC=server?Object.assign(emptyDoc(),clone(server)):emptyDoc();
@@ -2918,19 +2919,27 @@ async function boot(reuse){
  if(isAdmin&&SERVER&&(encOn&&!!CRY)!==serverEnc&&!dirty){dirty=true;el("dirtyMsg").hidden=false;
   el("dirtyMsg").textContent=encOn?"🔒 암호를 정했습니다. 데이터 파일을 내려받아 GitHub에 올려야 잠깁니다.":"암호를 껐습니다. 데이터 파일을 내려받아 GitHub에 올리면 잠금이 풀립니다."}
  redraw();if(dirty)startSyncWatch();
- if(staleDraft)askStaleDraft(staleDraft,server)}
-function askStaleDraft(old,server){
- const f=t=>{if(!t)return "날짜 없음";const d=new Date(t),z=n=>String(n).padStart(2,"0");return `${d.getMonth()+1}.${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`};
- ask("이 기기에 예전 수정이 남아 있습니다",
-  `이 기기(브라우저)에 <b>${f(old.updatedAt)}</b> 자료를 고치다가 올리지 않은 내용이 남아 있습니다.<br>
-   그런데 GitHub에는 그보다 <b>최신 자료(${f(server.updatedAt)})</b>가 올라와 있습니다.<br><br>
-   지금은 <b>최신 자료</b>를 보여주고 있습니다. 보통은 <b>최신 자료로 보기</b>를 누르면 됩니다.<br>
-   <small>예전 수정을 계속하면 최신 자료에 들어간 일정·입출고가 빠질 수 있습니다.</small>`,
-  "최신 자료로 보기",()=>{dropDraft()},"ok");
- el("cfmNo").textContent="예전 수정 계속";
- cfmNoFn=()=>{DOC=normalize(old);dirty=true;el("dirtyMsg").hidden=false;
-  el("dirtyMsg").textContent="예전 수정을 이어서 보고 있습니다. 최신 자료와 다를 수 있습니다.";
-  saveDraft();setState();redraw();startSyncWatch()}}
+}
+
+/* ---- 자동 새로고침: GitHub 자료가 바뀌면 열어 둔 화면도 저절로 최신으로 ---- */
+let lastSig="";
+const sigOf=r=>!r?"":r.enc?String(r.iv||""):String(r.updatedAt||"")+"|"+((r.log&&r.log.length)||0);
+function busyNow(){
+ if(document.querySelector(".scrim:not([hidden]),.drawer.open,#view-inbox:not([hidden])"))return true;
+ const a=document.activeElement;return !!(a&&(a.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=="checkbox"))}
+let refreshing=false;
+async function autoRefresh(){
+ if(refreshing||document.hidden||!SERVER)return;
+ try{refreshing=true;
+  const r=await fetch("data.json?v="+Date.now(),{cache:"no-store"});if(!r.ok)return;
+  const raw=await r.json(),sg=sigOf(raw);
+  if(!sg||sg===lastSig)return;
+  if(busyNow())return;            /* 창을 열어 작업 중이면 다음 차례에 */
+  await boot()}
+ catch(e){}finally{refreshing=false}}
+setInterval(autoRefresh,60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)autoRefresh()});
+window.addEventListener("focus",autoRefresh);
 
 /* ---- admin bar ---- */
 /* ---- 관리자 모드: 버튼 하나로 켜고 끄기 ---- */
