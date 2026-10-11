@@ -1036,6 +1036,19 @@ body.dragging{user-select:none;-webkit-user-select:none}
  .cal-day{height:94px}
  .ev{font-size:10.5px}
 }
+
+/* ---- 정리판7: 휴대폰 그래프 머리 정리 ---- */
+.vchart .inctg.dis{color:var(--muted);cursor:default;background:var(--surface-2)}
+@media (max-width:640px){
+ .vchart{padding:10px 10px 8px}
+ .vchart .vh{flex-direction:column;align-items:stretch;gap:8px}
+ .vchart .vh>b{font-size:12px;line-height:1.4}
+ .vchart .lgd{flex-wrap:wrap;gap:6px 14px;font-size:12px}
+ .vchart .lgd span{white-space:nowrap}
+ .vchart .inctg{order:-1;flex:1 1 100%;justify-content:center;font-size:14px;font-weight:600;padding:9px 12px;min-height:42px;white-space:nowrap}
+ .vchart .inctg input{width:18px;height:18px}
+ .vchart .inctg kbd{display:none}
+}
 </style>
 </head>
 <body>
@@ -1288,7 +1301,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   </form>
 </div>
 <div id="printArea" aria-hidden="true"></div>
-<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-정리판6</p>
+<p id="appVer" class="appver">SSP 목재 재고 현황판 · 버전 2026.10.11-정리판7</p>
 
 <div class="scrim" id="dayDlg" hidden>
   <div class="arr daybox" role="dialog" aria-modal="true" aria-labelledby="dayTitle" id="dayBox"></div>
@@ -1638,7 +1651,7 @@ function drawSum(g){
   const short=sumItems.filter(x=>x.target>0&&x.qty+x.inc<x.target).length;
   chart=`<div class="vchart${isAdmin?" can":""}" id="vchart"><div class="vh"><b>길이별 현재고와 적정재고 · 막대가 선보다 낮으면 모자란 길이${isAdmin?'<span class="scr-only"> · 막대를 누르면 담기</span>':""}</b>
     <span class="lgd"><span><i class="lb"></i>현재 재고</span>${incAll?`<span${showInc?"":' class="off"'}><i class="li"></i>입항 재고</span>`:""}<span><i class="ll"></i>적정 재고</span><span>모자란 길이 <b>${short}</b>종</span>
-     ${incAll?`<label class="inctg" title="단축키 /"><input type="checkbox" id="incTg"${showInc?" checked":""}> 입항 재고 더해 보기 <kbd>/</kbd></label>`:""}</span></div>
+     ${incAll?`<label class="inctg" title="단축키 /"><input type="checkbox" id="incTg"${showInc?" checked":""}> 입항 재고 더해 보기 <kbd>/</kbd></label>`:`<label class="inctg dis" title="이 규격으로 들어올 입항 일정이 없습니다"><input type="checkbox" disabled> 입항 예정 없음</label>`}</span></div>
    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="길이별 현재 재고 막대와 적정 재고 선">${grid}<line x1="${pl}" x2="${W-pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--muted)" stroke-width="1"/>${hits}<g pointer-events="none">${bars}${line}</g>${lab}</svg>
    <div class="vtip" id="vtip" hidden></div></div>`}
  box.innerHTML=tiles+donut+chart}
